@@ -4,14 +4,40 @@
     <meta charset="utf-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Twitter Example</title>
-    <style>
-      a.button {
-        text-decoration: none;
-      }
-    </style>
   </head>
-
   <body>
-    <a href="/twitter/login" class="button">Login with Twitter</a>
+    <button onclick="login()" id="loginButton">Login with Twitter</button>
+
+    <script>
+if (window.location.pathname === "/twitter/callback") {
+  document.getElementById('loginButton').style.display = "none"
+  const url = '/twitter/user-info' + window.location.search
+  fetch(url)
+    .then(resp => resp.text())
+    .then(body => {
+      console.log(body)
+
+      const container = document.createElement('p')
+      const content = document.createTextNode(body)
+      container.appendChild(content)
+
+      document.body.append(container)
+    })
+}
+
+function login() {
+  const buttonElement = document.getElementById('loginButton')
+  buttonElement.disabled = true
+  buttonElement.innerHTML = 'Redirecting'
+
+  fetch('/twitter/login-url')
+    .then(resp => resp.text())
+    .then(url => window.location.href= url)
+    .catch(() => {
+      buttonElement.disabled = false
+      buttonElement.innerHTML = 'Login with twitter'
+    })
+}
+    </script>
   </body>
 </html>
